@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, NativeModules, Image, TouchableOpacity, SafeAreaView, ActionSheetIOS } from 'react-native';
 import { Row, Col, ActionSheet, Root } from 'native-base'
-//import ImageResizer from 'react-native-image-resizer';
-var ImageResizer = NativeModules.ImageResizer;
+import ImageResizer from 'react-native-image-resizer'
 var ImagePicker = NativeModules.ImageCropPicker;
+
+// var ImageResizer = require('react-native-image-resizer').default
 
 const PHOTO_SIZE_LARGE = 170;
 const PHOTO_SIZE_MEDIUM = 100;
@@ -14,6 +15,7 @@ export default class App extends Component<Props> {
 
     constructor(props, context) {
         super(props, context);
+        
         this.state = {
             selectecPicture: "https://i.pinimg.com/474x/52/fe/c5/52fec54732ea8fa383f614f447aec4ac--avatar-james-cameron-blue-avatar.jpg",
 
@@ -49,47 +51,11 @@ export default class App extends Component<Props> {
         }
     }
 
-    resize(uri, pathLarge, pathMedium, pathSmall) {
-        debugger
-        console.log("Resizing: ", uri)
-         ImageResizer.createResizedImage(uri, PHOTO_SIZE_LARGE, PHOTO_SIZE_LARGE, 'JPEG', 100, 0, pathLarge)
-            .then((resp) => {
-                console.log("Resized: ", resp)
-                this.setState({
-                    largeUri: resp.uri,
-                });
-            })
-            .catch(err => {
-                console.log(err);
-                // return Alert.alert('Unable to resize the photo', 'Check the console for full the error message');
-            });
 
-        //  ImageResizer.createResizedImage(uri, PHOTO_SIZE_MEDIUM, PHOTO_SIZE_MEDIUM, 'JPEG', 100, 0, pathMedium)
-        //     .then(({ uri }) => {
-        //         this.setState({
-        //             mediumUri: uri,
-        //         });
-        //     })
-        //     .catch(err => {
-        //         console.log(err);
-        //         // return Alert.alert('Unable to resize the photo', 'Check the console for full the error message');
-        //     });
 
-        //  ImageResizer.createResizedImage(uri, PHOTO_SIZE_SMALL, PHOTO_SIZE_SMALL, 'JPEG', 100, 0, pathSmall)
-        //     .then(({ uri }) => {
-        //         this.setState({
-        //             smallUri: uri,
-        //         });
-        //     })
-        //     .catch(err => {
-        //         console.log(err);
-        //         // return Alert.alert('Unable to resize the photo', 'Check the console for full the error message');
-        //     });
 
-    }
 
     loadImage() {
-
         if (Platform.OS === 'ios') {
             ActionSheetIOS.showActionSheetWithOptions(
                 {
@@ -117,7 +83,24 @@ export default class App extends Component<Props> {
 
     }
 
+    resizeLarge(uri) {
+        
+        console.log("Saved in: ", resizedImageUri)
+
+        // createResizedImage(
+        //         `data:image/jpeg;base64,${response.data}`,
+        //         maxHeight,
+        //         maxWidth,
+        //         format,
+        //         quality,
+        //         rotation
+        //     )                    
+        console.log("Resizing: ", uri, " to large size: ", pathLarge);
+        return ImageResizer.createResizedImage(uri, PHOTO_SIZE_LARGE, PHOTO_SIZE_LARGE, 'JPEG', 100, 0)
+    }
+
     loadImageFromLibrary() {
+        console.log("Resizer: ", ImageResizer)
         ImagePicker.openPicker({
             width: 600,
             height: 600,
@@ -130,8 +113,24 @@ export default class App extends Component<Props> {
             includeExif: false
         }).then(image => {
             console.log(image);
-            this.resize(`file://${image.path}`, `${image.path}_large`, `${image.path}_medium`, `${image.path}_small`)
-            this.setState({ selectecPicture: `file://${image.path}` })
+            console.log("Resizer: ", ImageResizer)
+            let imgPath = `file://${image.path}`;
+            this.setState({ selectecPicture: imgPath });
+
+            this.setState({ largeUri: imgPath });
+            this.setState({ mediumUri: imgPath });
+            this.setState({ smallUri: imgPath });
+
+
+
+
+            const resizedImageUri = ImageResizer.createResizedImage(image.sourceURL, PHOTO_SIZE_LARGE, PHOTO_SIZE_LARGE, 'JPEG', 100, 0);
+            console.log(resizedImageUri)
+            return resizedImageUri;
+        }).then(resp => {
+            console.log("Resized: ", resp);
+        }).catch(e => {
+            console.log("Error: ", e)
         });
     }
 
@@ -167,6 +166,7 @@ export default class App extends Component<Props> {
                                         style={styles.pickerImg}
                                         resizeMode='cover'
                                         source={{ uri: this.state.selectecPicture }}
+                                        onLoad={ (x) => { console.log(x, z) }}
                                     />
                                 </TouchableOpacity>
 
