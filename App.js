@@ -83,35 +83,20 @@ export default class App extends Component<Props> {
 
     }
 
-    resizeLarge(uri) {
-        
-        console.log("Saved in: ", resizedImageUri)
-
-        // createResizedImage(
-        //         `data:image/jpeg;base64,${response.data}`,
-        //         maxHeight,
-        //         maxWidth,
-        //         format,
-        //         quality,
-        //         rotation
-        //     )                    
-        console.log("Resizing: ", uri, " to large size: ", pathLarge);
-        return ImageResizer.createResizedImage(uri, PHOTO_SIZE_LARGE, PHOTO_SIZE_LARGE, 'JPEG', 100, 0)
-    }
-
     loadImageFromLibrary() {
         console.log("Resizer: ", ImageResizer)
         ImagePicker.openPicker({
-            width: 600,
-            height: 600,
+            width: PHOTO_SIZE_LARGE,
+            height: PHOTO_SIZE_LARGE,
             //cropping: true
             cropping: true,
             cropperCircleOverlay: true,
-            compressImageMaxWidth: 600,
-            compressImageMaxHeight: 600,
+            compressImageMaxWidth: PHOTO_SIZE_LARGE,
+            compressImageMaxHeight: PHOTO_SIZE_LARGE,
             compressImageQuality: 1,
             includeExif: false
         }).then(image => {
+            debugger
             console.log(image);
             console.log("Resizer: ", ImageResizer)
             let imgPath = `file://${image.path}`;
@@ -136,13 +121,13 @@ export default class App extends Component<Props> {
 
     takeAPictureFromCamera() {
         ImagePicker.openCamera({
-            width: 600,
-            height: 600,
+            width: PHOTO_SIZE_LARGE,
+            height: PHOTO_SIZE_LARGE,
             //cropping: true
             cropping: true,
             cropperCircleOverlay: true,
-            compressImageMaxWidth: 600,
-            compressImageMaxHeight: 600,
+            compressImageMaxWidth: PHOTO_SIZE_LARGE,
+            compressImageMaxHeight: PHOTO_SIZE_LARGE,
             compressImageQuality: 1,
             includeExif: false
         }).then(image => {
@@ -166,7 +151,6 @@ export default class App extends Component<Props> {
                                         style={styles.pickerImg}
                                         resizeMode='cover'
                                         source={{ uri: this.state.selectecPicture }}
-                                        onLoad={ (x) => { console.log(x, z) }}
                                     />
                                 </TouchableOpacity>
 
@@ -226,8 +210,8 @@ const styles = StyleSheet.create({
     },
     pickerImg: {
         paddingVertical: 0,
-        width: 250,
-        height: 250,
+        width: PHOTO_SIZE_LARGE,
+        height: PHOTO_SIZE_LARGE,
         borderRadius: 0
     },
     selectPictureText: {
